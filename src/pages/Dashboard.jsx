@@ -26,36 +26,61 @@ export default function Dashboard() {
     setError(null);
 
     try {
+      console.log('📊 Cargando datos del dashboard...');
+
       // Intentar cargar estadísticas
       try {
+        console.log('📈 Cargando estadísticas...');
         const estadisticas = await reportesApi.getEstadisticas();
+        console.log('✅ Estadísticas cargadas:', estadisticas);
         setStats(estadisticas);
       } catch (e) {
+        console.warn('⚠️  Error cargando reportes, usando fallback:', e.message);
         // Si falla reportes (puede requerir api key), usar datos básicos
-        const productosData = await productosApi.getAll({ limite: 1 });
-        setStats(prev => ({
-          ...prev,
-          totalProductos: productosData.total || 0
-        }));
+        try {
+          const productosData = await productosApi.getAll({ limite: 1 });
+          console.log('📦 Datos de productos fallback:', productosData);
+          setStats(prev => ({
+            ...prev,
+            totalProductos: productosData.total || productosData.data?.length || 0
+          }));
+        } catch (fallbackError) {
+          console.warn('⚠️  Error en fallback de productos:', fallbackError.message);
+          // Usar datos por defecto
+          setStats({
+            totalProductos: 0,
+            totalMovimientos: 0,
+            movimientosPorTipo: { entrada: 0, salida: 0, ajuste: 0 }
+          });
+        }
       }
 
       // Cargar alertas de stock
       try {
+        console.log('🚨 Cargando alertas de stock...');
         const alertasData = await productosApi.getAlertasStock();
-        setAlertas(alertasData.alertas || alertasData || []);
+        console.log('✅ Alertas cargadas:', alertasData);
+        const alertasArray = alertasData.alertas || (Array.isArray(alertasData) ? alertasData : []);
+        setAlertas(alertasArray);
       } catch (e) {
-        console.error('Error cargando alertas:', e);
+        console.warn('⚠️  Error cargando alertas:', e.message);
+        setAlertas([]);
       }
 
       // Cargar movimientos recientes
       try {
+        console.log('📋 Cargando movimientos recientes...');
         const movData = await movimientosApi.getAll({ limite: 5 });
-        setMovimientosRecientes(movData.movimientos || movData || []);
+        console.log('✅ Movimientos cargados:', movData);
+        const movimientosArray = movData.movimientos || (Array.isArray(movData) ? movData : []);
+        setMovimientosRecientes(movimientosArray);
       } catch (e) {
-        console.error('Error cargando movimientos:', e);
+        console.warn('⚠️  Error cargando movimientos:', e.message);
+        setMovimientosRecientes([]);
       }
 
     } catch (err) {
+      console.error('❌ Error general:', err);
       setError(err.message);
     } finally {
       setLoading(false);

@@ -1,13 +1,14 @@
 const API_URL = 'http://localhost:3000/api';
+const API_KEY = 'api_key_desarrollo_super_secreto_12345'; // Mismo que en .env del backend
 
 // Función para obtener el token del localStorage
 const getToken = () => localStorage.getItem('token');
 
-// Función para obtener el API key (si es necesario para reportes)
-const getApiKey = () => localStorage.getItem('apiKey');
+// Función para obtener el API key
+const getApiKey = () => API_KEY;
 
 // Headers comunes para las peticiones
-const getHeaders = (includeApiKey = false) => {
+const getHeaders = (includeApiKey = true) => {
     const headers = {
         'Content-Type': 'application/json',
     };
@@ -18,10 +19,7 @@ const getHeaders = (includeApiKey = false) => {
     }
 
     if (includeApiKey) {
-        const apiKey = getApiKey();
-        if (apiKey) {
-            headers['x-api-key'] = apiKey;
-        }
+        headers['x-api-key'] = getApiKey();
     }
 
     return headers;

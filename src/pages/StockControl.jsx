@@ -99,7 +99,7 @@ export default function StockControl() {
 
     setSaving(true);
     try {
-      await movimientosApi.create({
+      console.log('📝 Enviando movimiento:', {
         producto_id: Number(formData.producto_id),
         tipo_movimiento: moveModal.tipo,
         cantidad: Number(formData.cantidad),
@@ -107,12 +107,23 @@ export default function StockControl() {
         observaciones: formData.observaciones
       });
 
+      const resultado = await movimientosApi.create({
+        producto_id: Number(formData.producto_id),
+        tipo_movimiento: moveModal.tipo,
+        cantidad: Number(formData.cantidad),
+        motivo: formData.motivo || `${moveModal.tipo.charAt(0).toUpperCase() + moveModal.tipo.slice(1)} de stock`,
+        observaciones: formData.observaciones
+      });
+
+      console.log('✅ Movimiento creado exitosamente:', resultado);
       setSuccess(`${moveModal.tipo.charAt(0).toUpperCase() + moveModal.tipo.slice(1)} registrada correctamente`);
       setMoveModal({ open: false, tipo: 'entrada' });
+      setFormData({ producto_id: '', cantidad: '', motivo: '', observaciones: '' });
       fetchMovimientos();
       fetchAlertas();
     } catch (err) {
-      setError(err.message);
+      console.error('❌ Error al crear movimiento:', err);
+      setError(err.message || 'Error al registrar el movimiento');
     } finally {
       setSaving(false);
     }
