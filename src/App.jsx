@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
 import DashboardLayout from './layout/DashboardLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -11,22 +13,29 @@ import Users from './pages/Users';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="products" element={<Products />} />
-          <Route path="products/new" element={<ProductForm />} />
-          <Route path="categories" element={<Categories />} />
-          <Route path="stock" element={<StockControl />} />
-          <Route path="suppliers" element={<Suppliers />} />
-          <Route path="users" element={<Users />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+
+          <Route path="/dashboard" element={
+            <PrivateRoute>
+              <DashboardLayout />
+            </PrivateRoute>
+          }>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<Products />} />
+            <Route path="products/new" element={<ProductForm />} />
+            <Route path="products/:id/edit" element={<ProductForm />} />
+            <Route path="categories" element={<Categories />} />
+            <Route path="stock" element={<StockControl />} />
+            <Route path="suppliers" element={<Suppliers />} />
+            <Route path="users" element={<Users />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
