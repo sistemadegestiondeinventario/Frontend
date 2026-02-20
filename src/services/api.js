@@ -7,7 +7,7 @@ const getToken = () => localStorage.getItem('token');
 const getApiKey = () => import.meta.env.VITE_API_KEY || 'api_key_desarrollo_super_secreto_12345';
 
 // Headers comunes para las peticiones
-const getHeaders = (includeApiKey = true) => {
+const getHeaders = (includeApiKey = false) => {
     const headers = {
         'Content-Type': 'application/json',
     };
@@ -17,6 +17,8 @@ const getHeaders = (includeApiKey = true) => {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
+    // API_KEY solo para rutas públicas (login, registro)
+    // Las rutas autenticadas usan JWT
     if (includeApiKey) {
         headers['x-api-key'] = getApiKey();
     }
