@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://backend-ofsv.onrender.com/api';
 
 // Función para obtener el token del localStorage
 const getToken = () => localStorage.getItem('token');
